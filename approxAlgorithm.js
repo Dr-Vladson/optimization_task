@@ -1,4 +1,4 @@
-function approxAlgorithm(targets, maxBombAmount, maxDistance) {
+function approxAlgorithm(targets, maxBombAmount, maxDistance, distancesMatrix) {
     targets = [...targets];
     for (let i = 0; i < targets.length; i++) {
         const target = targets[i];
@@ -18,5 +18,5 @@ function approxAlgorithm(targets, maxBombAmount, maxDistance) {
         return b.bombAmount - a.bombAmount;
     });
 
-    return greedyAlgorithm(targets, maxBombAmount, maxDistance);
+    return greedyAlgorithm(targets, maxBombAmount, maxDistance, distancesMatrix);
 }

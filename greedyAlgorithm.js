@@ -1,6 +1,7 @@
-function greedyAlgorithm(targets, maxBombAmount, maxDistance) {
+function greedyAlgorithm(targets, maxBombAmount, maxDistance, distancesMatrix) {
     const srgs = [];
     targets = [...targets];
+    // let counter = 0;
     while (targets.length) {
         const srg = new SRG();
         srgs.push(srg);
@@ -16,6 +17,11 @@ function greedyAlgorithm(targets, maxBombAmount, maxDistance) {
                 srg.bombAmount += target.bombAmount;
             }
         }
+        // console.log("Fff")
+        // counter++;
+        // if (counter > targets.length) {
+        //     break;
+        // }
     }
     return srgs;
 }
