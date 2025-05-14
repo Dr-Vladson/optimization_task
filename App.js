@@ -6,9 +6,9 @@ class App {
     }
 
     startModeChoice() {
-        this.mode = confirm(
-            "Підтвердіть для роботи з індивідуальною задачею, ІНАКШЕ буде ініційовано проведення експериментального дослідження алгоритмів"
-        );
+        // this.mode = confirm(
+        //     "Підтвердіть для роботи з індивідуальною задачею, ІНАКШЕ буде ініційовано проведення експериментального дослідження алгоритмів"
+        // );
         // this.mode = true;
         if (this.mode) {
             this.title = createTitle(
@@ -19,9 +19,299 @@ class App {
             this.okBtnFunc = this.onIndividualTaskTypeChoose.bind(this);
             this.okBtn.addEventListener("click", this.okBtnFunc);
         } else {
+            this.title = createTitle(
+                `1 - Дослідження впливу відношення максимальної к-сті вибухівки у цілей до максимальної кількості вибухівки ДРГ
+                 2 - Дослідження впливу кількості цілей ДРГ (розмірності задачі) на час роботи алгоритмів та
+                    порівняння ефективності алгоритмів для різної кількості цілей ДРГ (розмірності задачі),
+                 3 - читання даних із файлу`
+            );
+            this.numInput = createNumInput(1, 4);
+            this.okBtn = createButton();
+            this.okBtnFunc = this.onExperimentChoose.bind(this);
+            this.okBtn.addEventListener("click", this.okBtnFunc);
         }
         //!!del
         // this.generateRandomData();
+    }
+
+    onExperimentChoose() {
+        switch (this.numInput.value) {
+            case "1":
+                this.okBtn.removeEventListener("click", this.okBtnFunc);
+                this.okBtnFunc = null;
+                this.startBombAmountExperimentParamsChoice();
+                break;
+            case "2":
+                this.okBtn.removeEventListener("click", this.okBtnFunc);
+                this.okBtnFunc = null;
+                this.startTargetsAmountExperimentParamsChoice();
+                break;
+            case "3":
+                this.okBtn.removeEventListener("click", this.okBtnFunc);
+                this.okBtnFunc = null;
+                // this.initFileChoiceRound();
+                break;
+            default:
+                alert("Оберіть 1, 2, 3 чи 4");
+                break;
+        }
+    }
+
+    startBombAmountExperimentParamsChoice() {
+        this.title.innerText = `Введіть початковий відсоток, відсоток кроку, кінцевий відсоток максимальної 
+            кількості вибухівки у цілі відносно максимальної кількості вибухівки ДРГ`;
+        this.numInput.min = 0;
+        this.numInput.max = 100;
+        this.numInput.value = 0;
+        this.numInput2 = createNumInput(0, 100);
+        this.numInput2.value = 5;
+        this.numInput3 = createNumInput(0, 100);
+        this.numInput3.value = 100;
+        this.title2 = createTitle("Введіть кількість цілей ДРГ");
+        this.numInput4 = createNumInput(1, 1000);
+        this.numInput4.value = 100;
+        this.title3 = createTitle("Введіть максимальну кількість вибухівки для однієї ДРГ");
+        this.numInput5 = createNumInput(1, 100);
+        this.numInput5.value = 100;
+        this.title4 = createTitle("Введіть максимальну відстань між цілями для однієї ДРГ");
+        this.numInput6 = createNumInput(1, 100);
+        this.numInput6.value = 100;
+        this.title5 = createTitle("Введіть кількість повторів на кожному кроці");
+        this.numInput7 = createNumInput(1, 100);
+        this.numInput7.value = 100;
+        root.appendChild(this.okBtn);
+        this.okBtn.innerText = "Розпочати експеримент";
+        this.okBtnFunc = this.onBombAmountExperimentParamsChoice.bind(this);
+        this.okBtn.addEventListener("click", this.okBtnFunc);
+    }
+
+    onBombAmountExperimentParamsChoice() {
+        if (!this.checkInputValue(+this.numInput.value, 0, 100)) {
+            alert("Початковий відсоток має бути у межах від 0 до 100");
+        } else if (!this.checkInputValue(+this.numInput2.value, 0, 100) || +this.numInput2.value === 0) {
+            alert("Відсоток кроку має бути у межах (0, 100]");
+        } else if (!this.checkInputValue(+this.numInput3.value, +this.numInput.value, 100) || +this.numInput3.value === 0) {
+            alert("Кінцевий відсоток має бути у межах від початкового до 100");
+        } else if (!this.checkInputValue(+this.numInput4.value, 1, 1000)) {
+            alert("Кількість цілей ДРГ має бути у межах від 1 до 1000");
+        } else if (!this.checkInputValue(+this.numInput5.value)) {
+            alert("Максимальна кількість вибухівки має бути у межах від 1 до 100");
+        } else if (!this.checkInputValue(+this.numInput6.value)) {
+            alert("Максимальну відстань має бути у межах від 1 до 100");
+        } else if (!this.checkInputValue(+this.numInput7.value)) {
+            alert("Кількість повторів на кожному кроці має бути у межах від 1 до 100");
+        } else {
+            this.okBtn.removeEventListener("click", this.okBtnFunc);
+            this.okBtnFunc = null;
+            this.createBombAmountExperiment({
+                startPercent: +this.numInput.value,
+                stepPercent: +this.numInput2.value,
+                endPercent: +this.numInput3.value,
+                targetsCount: +this.numInput4.value,
+                maxBombAmount: +this.numInput5.value,
+                maxDistanceBeetweenTargets: +this.numInput6.value,
+                repeatsCount: +this.numInput7.value,
+            });
+            this.okBtn.remove();
+            this.numInput.remove();
+            this.numInput2.remove();
+            this.numInput3.remove();
+            this.numInput4.remove();
+            this.numInput5.remove();
+            this.numInput6.remove();
+            this.numInput7.remove();
+            this.title.remove();
+            this.title2.remove();
+            this.title3.remove();
+            this.title4.remove();
+            this.title5.remove();
+            this.numInput =
+                this.numInput2 =
+                this.numInput3 =
+                this.numInput4 =
+                this.numInput5 =
+                this.numInput6 =
+                this.numInput7 =
+                this.title =
+                this.okBtn =
+                this.title2 =
+                this.title3 =
+                this.title4 =
+                this.title5 =
+                    null;
+        }
+    }
+
+    createBombAmountExperiment({
+        startPercent,
+        stepPercent,
+        endPercent,
+        targetsCount,
+        maxBombAmount,
+        maxDistanceBeetweenTargets,
+        repeatsCount,
+    }) {
+        const totalData = {
+            steps: [],
+            greedyTimes: [],
+            approxTimes: [],
+            greedyResults: [],
+            approxResults: [],
+        };
+        this.coordZoneLenghtQuotient = 1 / 16;
+        const coordZoneLength = targetsCount * maxDistanceBeetweenTargets * this.coordZoneLenghtQuotient;
+        for (let i = startPercent; i <= endPercent; i += stepPercent) {
+            const stepData = {
+                greedyResultsSum: 0,
+                approxResultsSum: 0,
+                greedyTimesSum: 0,
+                approxTimesSum: 0,
+            };
+            const targetMaxBombAmount = (maxBombAmount * i) / 100;
+            console.log("targetMaxBombAmount", targetMaxBombAmount);
+            console.log("maxBombAmount", maxBombAmount);
+            for (let j = 0; j < repeatsCount; j++) {
+                const { targets, distanceMatrix } = this.generateRandomTargets({
+                    maxBombAmount: targetMaxBombAmount,
+                    coordZoneLength,
+                    targetsCount,
+                });
+                let greedyTime = performance.now();
+                const srgsByGreedy = greedyAlgorithm(targets, maxBombAmount, maxDistanceBeetweenTargets, distanceMatrix);
+                greedyTime = performance.now() - greedyTime;
+                console.log("greedyTime", greedyTime);
+                stepData.greedyTimesSum += greedyTime;
+                stepData.greedyResultsSum += srgsByGreedy.length;
+
+                let approxTime = performance.now();
+                const srgsByApprox = approxAlgorithm(targets, maxBombAmount, maxDistanceBeetweenTargets, distanceMatrix);
+                approxTime = performance.now() - approxTime;
+                console.log("approxTime", approxTime);
+                stepData.approxTimesSum += approxTime;
+                stepData.approxResultsSum += srgsByApprox.length;
+            }
+            // console.log("stepData", stepData);
+            const greedyAvgTime = stepData.greedyTimesSum / repeatsCount;
+            const approxAvgTime = stepData.approxTimesSum / repeatsCount;
+            const greedyAvgResult = stepData.greedyResultsSum / repeatsCount;
+            const approxAvgResult = stepData.approxResultsSum / repeatsCount;
+            totalData.steps.push(i);
+            totalData.greedyTimes.push(greedyAvgTime);
+            totalData.approxTimes.push(approxAvgTime);
+            totalData.greedyResults.push(greedyAvgResult);
+            totalData.approxResults.push(approxAvgResult);
+        }
+        this.createGraph(
+            {
+                nameX: "Співвідношення максимальної к-ті вибухівки для цілей до максимальної к-сті для ДРГ, %",
+                nameY: "Середній час роботи алгоритму (мс)",
+                canvasId: "chart1",
+            },
+            { data: totalData.steps },
+            { name: "Жадібний", color: "red", data: totalData.greedyTimes },
+            { name: "Наближений", color: "blue", data: totalData.approxTimes }
+        );
+        this.createGraph(
+            {
+                nameX: "Співвідношення максимальної к-ті вибухівки для цілей до максимальної к-сті для ДРГ, %",
+                nameY: "Середня кількість ДРГ (значення ЦФ)",
+                canvasId: "chart2",
+            },
+            { data: totalData.steps },
+            { name: "Жадібний", color: "red", data: totalData.greedyResults },
+            { name: "Наближений", color: "blue", data: totalData.approxResults }
+        );
+    }
+
+    createGraph(config, x, ...ys) {
+        const datasets = [];
+        for (let y of ys) {
+            const dataPoints = [];
+            for (let j = 0; j < x.data.length; j++) {
+                dataPoints.push({ x: x.data[j], y: y.data[j] });
+            }
+            datasets.push({
+                label: y.name,
+                data: dataPoints,
+                borderColor: y.color,
+                fill: false,
+                tension: 0.4,
+            });
+        }
+
+        const ctx = document.getElementById(config.canvasId).getContext("2d");
+        ctx.width = 400;
+        ctx.height = 200;
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                datasets,
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: "linear",
+                        title: {
+                            display: true,
+                            text: config.nameX,
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: config.nameY,
+                        },
+                    },
+                },
+            },
+        });
+
+        // const ctx = document.getElementById("chart").getContext("2d");
+        // const dataPoints = [
+        //     { x: 1.1, y: 10 },
+        //     { x: 2.3, y: 20 },
+        //     { x: 3.5, y: 15 },
+        //     { x: 4.75, y: 25 },
+        //     { x: 5.9, y: 30 },
+        // ];
+
+        // console.log(this.chart);
+        // this.chart = new Chart(ctx, {
+        //     type: "line",
+        //     data: {
+        //         datasets: [{
+        //             label: "Графік",
+        //             data: dataPoints,
+        //             borderColor: "red",
+        //             fill: false,
+        //             tension: 0.4,
+        //         }],
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         animation: {
+        //             duration: 0,
+        //         },
+        //         scales: {
+        //             x: {
+        //                 type: "linear",
+        //             },
+        //         },
+        //     },
+        // });
+    }
+
+    generateRandomTargets({ targetsCount, maxBombAmount, coordZoneLength }) {
+        const targets = [];
+        Target.index = 0;
+        for (let i = 0; i < targetsCount; i++) {
+            const x = Math.floor(Math.random() * coordZoneLength) - coordZoneLength / 2;
+            const y = Math.floor(Math.random() * coordZoneLength) - coordZoneLength / 2;
+            const bombs = Math.floor(Math.random() * maxBombAmount) + 1;
+            targets.push(new Target(bombs, x, y));
+        }
+        const distanceMatrix = createDistancesMatrix(targets);
+        return { targets, distanceMatrix };
     }
 
     onIndividualTaskTypeChoose() {
@@ -259,4 +549,4 @@ class App {
         if (value >= min && value <= max) return true;
     }
 }
-new App();
+const app = new App();
