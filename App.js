@@ -22,10 +22,9 @@ class App {
             this.title = createTitle(
                 `1 - Дослідження впливу відношення максимальної к-сті вибухівки у цілей до максимальної кількості вибухівки ДРГ
                  2 - Дослідження впливу кількості цілей ДРГ (розмірності задачі) на час роботи алгоритмів та
-                    порівняння ефективності алгоритмів для різної кількості цілей ДРГ (розмірності задачі),
-                 3 - читання даних із файлу`
+                    порівняння ефективності алгоритмів для різної кількості цілей ДРГ (розмірності задачі)`
             );
-            this.numInput = createNumInput(1, 4);
+            this.numInput = createNumInput(1, 2);
             this.okBtn = createButton();
             this.okBtnFunc = this.onExperimentChoose.bind(this);
             this.okBtn.addEventListener("click", this.okBtnFunc);
@@ -46,15 +45,166 @@ class App {
                 this.okBtnFunc = null;
                 this.startTargetsAmountExperimentParamsChoice();
                 break;
-            case "3":
-                this.okBtn.removeEventListener("click", this.okBtnFunc);
-                this.okBtnFunc = null;
-                // this.initFileChoiceRound();
-                break;
             default:
                 alert("Оберіть 1, 2, 3 чи 4");
                 break;
         }
+    }
+
+    startTargetsAmountExperimentParamsChoice() {
+        this.title.innerText = `Введіть параметри зміни розмірності задачі (кількість цілей ДРГ): від, крок і до`;
+        this.numInput.min = 0;
+        this.numInput.max = 1000;
+        this.numInput.value = 0;
+        this.numInput2 = createNumInput(0, 1000);
+        this.numInput2.value = 5;
+        this.numInput3 = createNumInput(0, 1000);
+        this.numInput3.value = 1000;
+        // this.title2 = createTitle("Введіть кількість цілей ДРГ");
+        // this.numInput4 = createNumInput(1, 1000);
+        // this.numInput4.value = 100;
+        this.title3 = createTitle("Введіть максимальну кількість вибухівки для однієї ДРГ");
+        this.numInput5 = createNumInput(1, 100);
+        this.numInput5.value = 100;
+        this.title4 = createTitle("Введіть максимальну відстань між цілями для однієї ДРГ");
+        this.numInput6 = createNumInput(1, 100);
+        this.numInput6.value = 100;
+        this.title5 = createTitle("Введіть кількість повторів на кожному кроці");
+        this.numInput7 = createNumInput(1, 100);
+        this.numInput7.value = 100;
+        root.appendChild(this.okBtn);
+        this.okBtn.innerText = "Розпочати експеримент";
+        this.okBtnFunc = this.onTargetsAmountExperimentParamsChoice.bind(this);
+        this.okBtn.addEventListener("click", this.okBtnFunc);
+    }
+
+    onTargetsAmountExperimentParamsChoice() {
+        if (!this.checkInputValue(+this.numInput.value, 0, 1000)) {
+            alert("Початкова розмірність має бути у межах від 0 до 1000");
+        } else if (!this.checkInputValue(+this.numInput2.value, 0, 100) || +this.numInput2.value === 0) {
+            alert("Розмірність кроку має бути у межах (0, 1000]");
+        } else if (!this.checkInputValue(+this.numInput3.value, +this.numInput.value, 1000) || +this.numInput3.value === 0) {
+            alert("Кінцева розмірність має бути у межах від початкової до 1000");
+        } else if (!this.checkInputValue(+this.numInput5.value)) {
+            alert("Максимальна кількість вибухівки має бути у межах від 1 до 100");
+        } else if (!this.checkInputValue(+this.numInput6.value)) {
+            alert("Максимальну відстань має бути у межах від 1 до 100");
+        } else if (!this.checkInputValue(+this.numInput7.value)) {
+            alert("Кількість повторів на кожному кроці має бути у межах від 1 до 100");
+        } else {
+            this.okBtn.removeEventListener("click", this.okBtnFunc);
+            this.okBtnFunc = null;
+            this.createTargetsAmountExperiment({
+                startTargetsAmount: +this.numInput.value,
+                stepTargetsAmount: +this.numInput2.value,
+                endTargetsAmount: +this.numInput3.value,
+                // targetsCount: +this.numInput4.value,
+                maxBombAmount: +this.numInput5.value,
+                maxDistanceBeetweenTargets: +this.numInput6.value,
+                repeatsCount: +this.numInput7.value,
+            });
+            this.okBtn.remove();
+            this.numInput.remove();
+            this.numInput2.remove();
+            this.numInput3.remove();
+            this.numInput5.remove();
+            this.numInput6.remove();
+            this.numInput7.remove();
+            this.title.remove();
+            this.title3.remove();
+            this.title4.remove();
+            this.title5.remove();
+            this.numInput =
+                this.numInput2 =
+                this.numInput3 =
+                this.numInput5 =
+                this.numInput6 =
+                this.numInput7 =
+                this.title =
+                this.okBtn =
+                this.title3 =
+                this.title4 =
+                this.title5 =
+                    null;
+        }
+    }
+
+    createTargetsAmountExperiment({
+        startTargetsAmount,
+        stepTargetsAmount,
+        endTargetsAmount,
+        maxBombAmount,
+        maxDistanceBeetweenTargets,
+        repeatsCount,
+    }) {
+        const totalData = {
+            steps: [],
+            greedyTimes: [],
+            approxTimes: [],
+            greedyResults: [],
+            approxResults: [],
+        };
+        this.coordZoneLenghtQuotient = 1 / 16;
+        maxBombAmount *= this.targetDevidedOnSRGBombsAmountQuotient;
+        for (let targetsCount = startTargetsAmount; targetsCount <= endTargetsAmount; targetsCount += stepTargetsAmount) {
+            const stepData = {
+                greedyResultsSum: 0,
+                approxResultsSum: 0,
+                greedyTimesSum: 0,
+                approxTimesSum: 0,
+            };
+            const coordZoneLength = targetsCount * maxDistanceBeetweenTargets * this.coordZoneLenghtQuotient;
+            for (let j = 0; j < repeatsCount; j++) {
+                const { targets, distanceMatrix } = this.generateRandomTargets({
+                    maxBombAmount,
+                    coordZoneLength,
+                    targetsCount,
+                });
+                let greedyTime = performance.now();
+                const srgsByGreedy = greedyAlgorithm(targets, maxBombAmount, maxDistanceBeetweenTargets, distanceMatrix);
+                greedyTime = performance.now() - greedyTime;
+                console.log("greedyTime", greedyTime);
+                stepData.greedyTimesSum += greedyTime;
+                stepData.greedyResultsSum += srgsByGreedy.length;
+
+                let approxTime = performance.now();
+                const srgsByApprox = approxAlgorithm(targets, maxBombAmount, maxDistanceBeetweenTargets, distanceMatrix);
+                approxTime = performance.now() - approxTime;
+                console.log("approxTime", approxTime);
+                stepData.approxTimesSum += approxTime;
+                stepData.approxResultsSum += srgsByApprox.length;
+            }
+            // console.log("stepData", stepData);
+            const greedyAvgTime = stepData.greedyTimesSum / repeatsCount;
+            const approxAvgTime = stepData.approxTimesSum / repeatsCount;
+            const greedyAvgResult = stepData.greedyResultsSum / repeatsCount;
+            const approxAvgResult = stepData.approxResultsSum / repeatsCount;
+            totalData.steps.push(targetsCount);
+            totalData.greedyTimes.push(greedyAvgTime);
+            totalData.approxTimes.push(approxAvgTime);
+            totalData.greedyResults.push(greedyAvgResult);
+            totalData.approxResults.push(approxAvgResult);
+        }
+        this.createGraph(
+            {
+                nameX: "Розмірність задачі (кількість цілей ДРГ)",
+                nameY: "Середній час роботи алгоритму (мс)",
+                canvasId: "chart1",
+            },
+            { data: totalData.steps },
+            { name: "Жадібний", color: "red", data: totalData.greedyTimes },
+            { name: "Наближений", color: "blue", data: totalData.approxTimes }
+        );
+        this.createGraph(
+            {
+                nameX: "Розмірність задачі (кількість цілей ДРГ)",
+                nameY: "Середня кількість ДРГ (значення ЦФ)",
+                canvasId: "chart2",
+            },
+            { data: totalData.steps },
+            { name: "Жадібний", color: "red", data: totalData.greedyResults },
+            { name: "Наближений", color: "blue", data: totalData.approxResults }
+        );
     }
 
     startBombAmountExperimentParamsChoice() {
