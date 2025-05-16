@@ -6,9 +6,9 @@ class App {
     }
 
     startModeChoice() {
-        // this.mode = confirm(
-        //     "Підтвердіть для роботи з індивідуальною задачею, ІНАКШЕ буде ініційовано проведення експериментального дослідження алгоритмів"
-        // );
+        this.mode = confirm(
+            "Підтвердіть для роботи з індивідуальною задачею, ІНАКШЕ буде ініційовано проведення експериментального дослідження алгоритмів"
+        );
         // this.mode = true;
         if (this.mode) {
             this.title = createTitle(
@@ -185,6 +185,7 @@ class App {
             totalData.greedyResults.push(greedyAvgResult);
             totalData.approxResults.push(approxAvgResult);
         }
+        console.log("experiment results", totalData);
         this.createGraph(
             {
                 nameX: "Розмірність задачі (кількість цілей ДРГ)",
@@ -318,8 +319,6 @@ class App {
                 approxTimesSum: 0,
             };
             const targetMaxBombAmount = (maxBombAmount * i) / 100;
-            console.log("targetMaxBombAmount", targetMaxBombAmount);
-            console.log("maxBombAmount", maxBombAmount);
             for (let j = 0; j < repeatsCount; j++) {
                 const { targets, distanceMatrix } = this.generateRandomTargets({
                     maxBombAmount: targetMaxBombAmount,
@@ -351,6 +350,7 @@ class App {
             totalData.greedyResults.push(greedyAvgResult);
             totalData.approxResults.push(approxAvgResult);
         }
+        console.log("experiment results", totalData);
         this.createGraph(
             {
                 nameX: "Співвідношення максимальної к-ті вибухівки для цілей до максимальної к-сті для ДРГ, %",
@@ -605,7 +605,10 @@ class App {
         const targetsCount = Math.floor(Math.random() * 100) + 1;
         this.targets = [];
         Target.index = 0;
-        let output = `Кількість вибухівки для одної ДРГ: ${this.maxBombAmount}\nМаксимальна відстань між цілями: ${this.maxDistanceBeetweenTargets}\nКількість цілей: ${targetsCount}\nЦілі: \n`;
+        let output = `-  Згенерована випадково умова задачі:
+        Кількість вибухівки для одної ДРГ: ${this.maxBombAmount}
+        Максимальна відстань між цілями: ${this.maxDistanceBeetweenTargets}
+        Кількість цілей: ${targetsCount}\nЦілі: \n`;
         const coordZone = targetsCount * this.maxDistanceBeetweenTargets * this.coordZoneLenghtQuotient;
         for (let i = 0; i < targetsCount; i++) {
             const x = Math.floor(Math.random() * coordZone) - coordZone / 2;
