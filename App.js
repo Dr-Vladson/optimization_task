@@ -59,7 +59,7 @@ class App {
         this.numInput2 = createNumInput(0, 1000);
         this.numInput2.value = 5;
         this.numInput3 = createNumInput(0, 1000);
-        this.numInput3.value = 1000;
+        this.numInput3.value = 100;
         // this.title2 = createTitle("Введіть кількість цілей ДРГ");
         // this.numInput4 = createNumInput(1, 1000);
         // this.numInput4.value = 100;
@@ -667,8 +667,8 @@ class App {
                         !x ||
                         !y ||
                         !bombs ||
-                        !this.checkInputValue(+x) ||
-                        !this.checkInputValue(+y) ||
+                        !this.checkInputValue(+x, -1000, 1000) ||
+                        !this.checkInputValue(+y, -1000, 1000) ||
                         !this.checkInputValue(+bombs, 1, this.maxBombAmount)
                     ) {
                         alert("Дані файлу не відповідають формату або виходять за межі допустимих значень");
