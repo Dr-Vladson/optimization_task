@@ -584,7 +584,7 @@ class App {
             }
         }
         const srgsByApprox = approxAlgorithm(this.targets, this.maxBombAmount, this.maxDistanceBeetweenTargets, this.distanceMatrix);
-        let output2 = `Приблизний алгоритм\n Кількість ДРГ (Значення ЦФ) - ${srgsByApprox.length}\n`;
+        let output2 = `Наближений алгоритм\n Кількість ДРГ (Значення ЦФ) - ${srgsByApprox.length}\n`;
         for (let i = 0; i < srgsByApprox.length; i++) {
             const srg = srgsByApprox[i];
             output2 += `- ДРГ ${i + 1}. Кількість вибухівки: ${srg.bombAmount}\n`;
